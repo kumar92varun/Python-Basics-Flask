@@ -4,16 +4,14 @@ app = Flask(__name__)
 
 @app.route('/')
 def homePage():
-    return "Varun Kumar is great"
+    return "Page to show weather of my current city & list down table of all the cities loaded from database"
 
 
-@app.route('/<name1>')
-def javascript(name1):
-    return f"<script>alert('Hiiii from {name1}');console.log('Hiiii from {name1}');</script><body>Hiii from {name1}</body>"
+@app.route('/cities')
+def citiesListPage():
+    return "Page to show list of cities"
 
 
-@app.route('/json')
-def jsonResponse():
-    return {
-        "name": "Varun Kumar"
-    }
+@app.route('/cities/add')
+def addCityPage():
+    return "Page to show a form to add a city in the database"
