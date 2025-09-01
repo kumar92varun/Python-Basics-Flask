@@ -15,3 +15,18 @@ def citiesListPage():
 @app.route('/cities/add')
 def addCityPage():
     return "Page to show a form to add a city in the database"
+
+@app.route('/cities/<string:name>')
+def loadCity(name):
+    return f"Page to show weather of the city: {name}"
+
+
+# API rotes below
+
+@app.get('/api/cities')
+def citiesListAPI():
+    return [
+        {"name": "New Delhi", "code": "new-delhi"},
+        {"name": "Agra", "code": "agra"},
+        {"name": "Lucknow", "code": "lucknow"},
+    ]
