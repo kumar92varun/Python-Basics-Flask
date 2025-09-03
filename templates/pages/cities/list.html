@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    </head>
+
+    <body>
+        <div class="container tm-40">
+            <div class="row text-center">
+                <h1 class="text-3xl font-bold underline">Page to show list of cities</h1>
+            </div>
+            <div class="row tm-20">
+                <table class="table table-striped align-middle text-center">
+                    <thead class="table-danger">
+                        <th class="border border-gray-300">City ID</th>
+                        <th>City Name</th>
+                        <th>Know Weather</th>
+                        <th>City Weather</th>
+                    </thead>
+                
+                    {% for city in cities %}
+                        <tr>
+                            <td>{{ city['id'] }}</td>
+                            <td>{{ city['name'] }}</td>
+                            <td>
+                                <button class="btn orange-2 tc-white" value="{{ city['id'] }}">Click to know weather of {{ city['name'] }}</button>
+                            </td>
+                            <td id="city-{{ city['id'] }}-weather"></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

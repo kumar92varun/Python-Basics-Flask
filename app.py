@@ -1,4 +1,4 @@
-from flask import Flask, url_for
+from flask import Flask, url_for, render_template
 
 app = Flask(__name__)
 
@@ -11,21 +11,23 @@ cities = [
 
 @app.route('/')
 def homePage():
-    return "Page to show weather of my current city & list down table of all the cities loaded from database"
+    return render_template('pages/home.html')
 
 
 @app.route('/cities')
 def citiesListPage():
-    return "Page to show list of cities"
+    return render_template('pages/cities/list.html', cities = cities)
 
 
 @app.route('/cities/add')
 def addCityPage():
     return "Page to show a form to add a city in the database"
 
+
 @app.route('/cities/<int:id>')
 def loadCity(id):
     return f"Page to show weather of the city: {cities[id]['name']}"
+
 
 @app.get("/api/get-all-links")
 def getAllLinksAPI():
@@ -50,8 +52,6 @@ def getAllLinksAPI():
     }
 
 
-## API rotes below
-
 # API to list all cities
 @app.get('/api/cities')
 def citiesListAPI():
@@ -63,6 +63,7 @@ def citiesListAPI():
         }
     }
 
+
 # API to create a new city
 @app.post('/api/cities')
 def addCityAPI():
@@ -72,6 +73,7 @@ def addCityAPI():
         "city": cities[2]
     }
 
+
 # API to delete a city
 @app.delete("/api/cities/<int:id>")
 def deleteCityAPI(id):
@@ -79,6 +81,7 @@ def deleteCityAPI(id):
         "status": "success",
         "message": f"City with ID {id} (Name: {cities[id]['name']}) has been deleted"
     }
+
 
 # API to load weather of all the cities
 @app.get("/api/weather")
@@ -105,6 +108,7 @@ def loadWeatherAPI():
             "weather": weather
         }
     }
+
 
 # Get weather of a particular city
 @app.get("/api/weather/<int:cityId>")
