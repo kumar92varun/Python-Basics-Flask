@@ -1,4 +1,6 @@
 from flask import Flask, url_for, render_template
+import os
+import requests
 
 app = Flask(__name__)
 
@@ -29,7 +31,7 @@ def loadCity(id):
     return f"Page to show weather of the city: {cities[id]['name']}"
 
 
-@app.get("/api/get-all-links")
+@app.get("/api/utils/get-all-links")
 def getAllLinksAPI():
     return {
         "status": "success",
@@ -113,15 +115,24 @@ def loadWeatherAPI():
 # Get weather of a particular city
 @app.get("/api/weather/<int:cityId>")
 def loadWeatherOfACity(cityId):
+    queryParams = {
+        'appid': os.getenv('WEATHER_API_KEY'),
+        'units': 'metric',
+        'q': cities[cityId]['name']
+    }
+    weatherResponse = requests.get("https://api.openweathermap.org/data/2.5/weather", params=queryParams)
+    apiResponse = weatherResponse.json()
+
     return {
         "status": "success",
         "message": f"Weather for city ID {cityId} (Name: {cities[cityId]['name']}) loaded successfully",
         "data": {
             "weather": {
-                "temperature": "30 °C",
-                "condition": "Sunny",
-                "humidity": "60%",
-                "wind": "10 km/h"
+                "temperature": f"{apiResponse['main']['temp']}°C",
+                "condition": apiResponse['weather'][0]['description'],
+                "humidity": f"{apiResponse['main']['humidity']}%",
+                "wind": f"{apiResponse['wind']['speed']} km/h",
+                "feelsLike": apiResponse['main']['feels_like']
             }
         }
     }
