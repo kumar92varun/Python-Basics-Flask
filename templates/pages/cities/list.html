@@ -11,7 +11,7 @@
             </div>
             <div class="row tm-20">
                 <table class="table table-striped align-middle text-center">
-                    <thead class="table-danger">
+                    <thead class="table-primary">
                         <th class="border border-gray-300">City ID</th>
                         <th>City Name</th>
                         <th>Know Weather</th>
@@ -23,9 +23,15 @@
                             <td>{{ city['id'] }}</td>
                             <td>{{ city['name'] }}</td>
                             <td>
-                                <button class="btn orange-2 tc-white" value="{{ city['id'] }}">Click to know weather of {{ city['name'] }}</button>
+                                <button class="btn btn-primary" value="{{ city['id'] }}" onclick="loadCityWeather({{ city['id'] }})">Click to know weather of {{ city['name'] }}</button>
                             </td>
-                            <td id="city-{{ city['id'] }}-weather"></td>
+                            <td id="city-{{ city['id'] }}-weather">
+                                <span class="d-block" id="city-{{ city['id'] }}-weather-condition"></span>
+                                <span class="d-block" id="city-{{ city['id'] }}-weather-temperature"></span>
+                                <span class="d-block" id="city-{{ city['id'] }}-weather-feelslike"></span>
+                                <span class="d-block" id="city-{{ city['id'] }}-weather-humidity"></span>
+                                <span class="d-block" id="city-{{ city['id'] }}-weather-wind"></span>
+                            </td>
                         </tr>
                     {% endfor %}
                 </table>
@@ -34,5 +40,21 @@
 
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            function loadCityWeather(id) {
+                let weatherData = fetch(`/api/weather/${id}`, {
+                    method: "GET",
+                })
+                .then(response => response.json())
+                .then(data => data.data.weather)
+                .then(data => {
+                    document.getElementById(`city-${id}-weather-condition`).innerText = `Condition: ${data.condition}`;
+                    document.getElementById(`city-${id}-weather-temperature`).innerText = `Temperature: ${data.temperature}`;
+                    document.getElementById(`city-${id}-weather-feelslike`).innerText = `Feels Like: ${data.feelsLike}`;
+                    document.getElementById(`city-${id}-weather-humidity`).innerText = `Humidity: ${data.humidity}`;
+                    document.getElementById(`city-${id}-weather-wind`).innerText = `Wind: ${data.wind}`;
+                })
+            }
+        </script>
     </body>
 </html>
