@@ -1,4 +1,4 @@
-from flask import Flask, url_for, render_template
+from flask import Flask, url_for, render_template, request, abort
 import os
 import requests
 
@@ -54,6 +54,32 @@ def getAllLinksAPI():
                 "loadWeatherAllCities": url_for('loadWeatherAPI'),
                 "loadWeatherOfACity": url_for('loadWeatherOfACity', cityId=1),
             }
+        }
+    }
+
+
+@app.route('/api/utils/dump-request-attributes', methods=['GET', 'POST'])
+def dumpAllRequestAttributes():
+    return {
+        "status": "success",
+        "message": "Request attributes dumped successfully",
+        "data": {
+            "args": request.args,
+            "form": request.form,
+            "values": request.values,
+            # "json": request.json,
+            # "files": request.files,
+            "headers": dict(request.headers),
+            "cookies": request.cookies,
+            "method": request.method,
+            "url": request.url,
+            "base_url": request.base_url,
+            "url_root": request.url_root,
+            "path": request.path,
+            "full_path": request.full_path,
+            "script_root": request.script_root,
+            "remote_addr": request.remote_addr,
+            "user_agent": str(request.user_agent),
         }
     }
 
