@@ -28,7 +28,11 @@ def addCityPage():
 
 @app.route('/cities/<int:id>')
 def loadCity(id):
-    return f"Page to show weather of the city: {cities[id]['name']}"
+    city = getCityById(id)
+    if city is None:
+        return f"City with ID {id} not found"
+
+    return f"Page to show weather of the city: {city['name']}"
 
 
 @app.get("/api/utils/get-all-links")
@@ -115,24 +119,45 @@ def loadWeatherAPI():
 # Get weather of a particular city
 @app.get("/api/weather/<int:cityId>")
 def loadWeatherOfACity(cityId):
+    city = getCityById(cityId)
+
     queryParams = {
         'appid': os.getenv('WEATHER_API_KEY'),
         'units': 'metric',
-        'q': cities[cityId]['name']
+        'q': city['name']
     }
     weatherResponse = requests.get("https://api.openweathermap.org/data/2.5/weather", params=queryParams)
     apiResponse = weatherResponse.json()
 
     return {
         "status": "success",
-        "message": f"Weather for city ID {cityId} (Name: {cities[cityId]['name']}) loaded successfully",
+        "message": f"Weather for city ID {cityId} (Name: {city['name']}) loaded successfully",
         "data": {
             "weather": {
                 "temperature": f"{apiResponse['main']['temp']}°C",
                 "condition": apiResponse['weather'][0]['description'],
                 "humidity": f"{apiResponse['main']['humidity']}%",
                 "wind": f"{apiResponse['wind']['speed']} km/h",
-                "feelsLike": apiResponse['main']['feels_like']
+                "feelsLike": f"{apiResponse['main']['feels_like']}°C",
             }
         }
     }
+
+
+def getCityIndexById(id):
+    index = None
+
+    for i, city in enumerate(cities):
+        if city['id'] == id:
+            index = i
+
+    return index
+
+
+def getCityById(id):
+    index = getCityIndexById(id)
+
+    if index is not None:
+        return cities[index]
+    else:
+        return None
