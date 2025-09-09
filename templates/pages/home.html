@@ -1,10 +1,20 @@
 <html>
     <head>
-        <style>
-            body{background:yellow;color:red;}
-        </style>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
     </head>
     <body>
-        <h1>Page to show weather of my current city & list down table of all the cities loaded from database</h1>
+        <div class="container text-center tm-40">
+            <div class="row">
+                <h1 class="text-3xl font-bold underline">Link of all the pages</h1>
+            </div>
+            <div class="row tm-20">
+                <div class="col-xs-12 col-sm-10 offset-sm-1">
+                    <a class="btn" href="{{ url_for('homePage') }}">Home</a>
+                    <a class="btn" href="{{ url_for('citiesListPage') }}">List of Cities</a>
+                    <a class="btn" href="{{ url_for('addCityPage') }}">Add a City</a>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
