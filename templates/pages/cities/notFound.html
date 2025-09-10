@@ -1,0 +1,25 @@
+<html>
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+</head>
+
+<body>
+    <div class="container tm-40">
+        <div class="row text-center">
+            <h1 class="text-3xl font-bold underline">City with given City ID not found</h1>
+        </div>
+
+        <div class="row tm-60">
+            <div class="col-xs-12 col-sm-10 offset-sm-1 col-md-6 offset-md-3 text-center">
+                <a href="{{ url_for('citiesListPage') }}" class="btn btn-primary">Back to all cities</a>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
