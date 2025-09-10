@@ -29,10 +29,12 @@ def addCityPage():
 @app.route('/cities/<int:id>')
 def loadCity(id):
     city = getCityById(id)
-    if city is None:
-        return f"City with ID {id} not found"
 
-    return f"Page to show weather of the city: {city['name']}"
+    if city is None:
+        abort(404, description='city_not_found')
+
+    cityWeather = loadWeatherOfACity(id)['data']['weather']
+    return render_template('pages/cities/view.html', city = city, weather = cityWeather)
 
 
 @app.get("/api/utils/get-all-links")
@@ -187,3 +189,12 @@ def getCityById(id):
         return cities[index]
     else:
         return None
+
+
+@app.errorhandler(404)
+def errorHandler404(error):
+    match error.description:
+        case 'city_not_found':
+            return render_template('pages/cities/notFound.html'), 404
+        case _:
+            return render_template('pages/errors/404.html'), 404
