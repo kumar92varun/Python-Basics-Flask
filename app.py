@@ -12,13 +12,20 @@ cities = [
 ]
 
 blogData = {
-    "clientName": "Varun",
-    "clientEmail": "kumar92varun@gmail.com",
+    "clientName": "First Name",
+    "clientEmail": "email@address.com",
+    "utmCampaign": "2025-sept",
+    "utmSource": "hh",
+    "utmMedium": "tech-mail",
+    "utmContent": "hh-jp",
+
     "mailSubject": "Thought you might find this interesting - from Crownstack",
     "blogUrl": "https://blog.crownstack.com/blog/qa/sdks-explained-for-qas",
     "blogTitle": "SDKs explained for QAs: what they are, what to test, and how",
-    "blogDescription": "From a QA perspective, this blog explains what an SDK is, breaks down its various components, highlights how it differs from an API, and provides practical guidance on what and how to test - including negative testing approaches."
+    "blogDescription": "From a QA perspective, this blog explains what an SDK is, breaks down its various components, highlights how it differs from an API, and provides practical guidance on what and how to test - including negative testing approaches.",
 }
+blogData['blogUrl'] = f"{blogData['blogUrl']}?utm_campaign={blogData['utmCampaign']}&utm_source={blogData['utmSource']}&utm_medium={blogData['utmMedium']}&utm_content={blogData['utmContent']}"
+
 
 @app.route('/')
 def homePage():
