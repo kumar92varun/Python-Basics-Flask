@@ -117,33 +117,6 @@ def deleteCityAPI(id):
     }
 
 
-# API to load weather of all the cities
-@app.get("/api/weather")
-def loadWeatherAPI():
-    weather = []
-    for city in cities:
-        weather.append({
-            "id": city['id'],
-            "name": city['name'],
-            "code": city['code'],
-            "country": city['country'],
-            "weather": {
-                "temperature": "30 °C",
-                "condition": "Sunny",
-                "humidity": "60%",
-                "wind": "10 km/h"
-            }
-        })
-
-    return {
-        "status": "success",
-        "message": "Weather for all the cities loaded successfully",
-        "data": {
-            "weather": weather
-        }
-    }
-
-
 # Get weather of a particular city
 @app.get("/api/weather/<int:cityId>")
 def loadWeatherOfACity(cityId):
