@@ -15,9 +15,9 @@ blogData = {
     "clientName": "First Name",
     "clientEmail": "email@address.com",
     "utmCampaign": "2025-sept",
-    "utmSource": "hh",
+    "utmSource": "cs",
     "utmMedium": "tech-mail",
-    "utmContent": "hh-jp",
+    "utmContent": "cs-vk",
 
     "mailSubject": "Thought you might find this interesting - from Crownstack",
     "blogUrl": "https://blog.crownstack.com/blog/qa/sdks-explained-for-qas",
