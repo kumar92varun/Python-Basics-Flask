@@ -11,6 +11,15 @@ cities = [
     {"id": 4, "name": "Mumbai", "code": "mumbai", "country": "India"},
 ]
 
+blogData = {
+    "clientName": "Varun",
+    "clientEmail": "kumar92varun@gmail.com",
+    "mailSubject": "Thought you might find this interesting - from Crownstack",
+    "blogUrl": "https://blog.crownstack.com/blog/qa/sdks-explained-for-qas",
+    "blogTitle": "SDKs explained for QAs: what they are, what to test, and how",
+    "blogDescription": "From a QA perspective, this blog explains what an SDK is, breaks down its various components, highlights how it differs from an API, and provides practical guidance on what and how to test - including negative testing approaches."
+}
+
 @app.route('/')
 def homePage():
     return render_template('pages/home.html')
@@ -35,6 +44,64 @@ def loadCity(id):
 
     cityWeather = loadWeatherOfACity(id)['data']['weather']
     return render_template('pages/cities/view.html', city = city, weather = cityWeather)
+
+
+@app.get('/mailers/view')
+def viewMailer():
+    return render_template('mailers/view.html', 
+        clientName=blogData['clientName'], 
+        blogUrl=blogData['blogUrl'], 
+        blogTitle=blogData['blogTitle'], 
+        blogDescription=blogData['blogDescription']
+    )
+
+@app.get('/mailers/send')
+def sendMailer():
+    import smtplib
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+    from email.utils import formataddr
+
+    # Gmail credentials
+    EMAIL = os.getenv('MAIL_SENDER_EMAIL')
+    PASSWORD = os.getenv('MAIL_SENDER_PASSWORD')  # Use App Password, not your Gmail login password
+
+    # Email details
+    TO_EMAIL = blogData['clientEmail']
+    SUBJECT = blogData['mailSubject']
+
+    # HTML content
+    HTML_CONTENT = render_template('mailers/view.html', 
+        clientName=blogData['clientName'], 
+        blogUrl=blogData['blogUrl'], 
+        blogTitle=blogData['blogTitle'], 
+        blogDescription=blogData['blogDescription']
+    )
+
+    # Create message container
+    msg = MIMEMultipart("alternative")
+    msg["From"] = formataddr((os.getenv('MAIL_SENDER_NAME'), os.getenv('MAIL_SENDER_EMAIL')))
+    msg["To"] = TO_EMAIL
+    msg["Subject"] = SUBJECT
+
+    # Attach the HTML body
+    msg.attach(MIMEText(HTML_CONTENT, "html"))
+
+    try:
+        # Connect to Gmail SMTP server
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        server.login(EMAIL, PASSWORD)
+
+        # Send email
+        server.sendmail(EMAIL, TO_EMAIL, msg.as_string())
+        return "✅ HTML email sent successfully!"
+
+        server.quit()
+    except Exception as e:
+        return "❌ Error:"
+
+
 
 
 @app.get("/api/utils/get-all-links")
