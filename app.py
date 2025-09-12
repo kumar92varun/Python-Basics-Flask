@@ -245,3 +245,70 @@ def errorHandler404(error):
             return render_template('pages/cities/notFound.html'), 404
         case _:
             return render_template('pages/errors/404.html'), 404
+
+
+@app.get('/api/db/create-mysql-connection')
+def runningRawSql():
+    from sqlalchemy import create_engine, text
+
+    engine = create_engine("mysql+pymysql://root:toor@localhost:3306/others_flask_demo")
+    connection = engine.connect()
+    query = """
+        CREATE TABLE IF NOT EXISTS users (
+            id INT PRIMARY KEY AUTO_INCREMENT, 
+            name VARCHAR(100), 
+            email VARCHAR(100), 
+            phone VARCHAR(20), 
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )
+    """
+    connection.execute(text(query))
+
+
+    result = connection.execute(text("INSERT INTO users (name, email, phone) VALUES ('Varun Kumar', 'kumar92varun@gmail.com', '8826039646')"))
+    connection.commit()
+
+    result = connection.execute(text("UPDATE users set name = 'Varun' WHERE name = 'Varun Kumar'"))
+    connection.commit()
+
+    result = connection.execute(text("DELETE FROM users WHERE name = 'Varun'"))
+    # connection.commit()
+
+
+    connection.close()
+
+    return {"engine": str(engine), "connection": str(connection), "result": str(result)}
+
+
+@app.get('/api/db/select-records')
+def runningSelectQuery():
+    from sqlalchemy import create_engine, text
+
+    engine = create_engine("mysql+pymysql://root:toor@localhost:3306/others_flask_demo")
+    connection = engine.connect()
+
+    result = connection.execute(text("SELECT * FROM users"))
+    oneRecord = result.fetchone()
+    print("Dumping 'oneRecord' object:")
+    print(oneRecord)
+    print(type(oneRecord))
+    print("Printing one record:")
+    print(f"Name: {oneRecord.name}, Email: {oneRecord.email}, Phone: {oneRecord.phone}")
+
+    oneRecord = result.fetchone()
+    print("Dumping 'oneRecord' object:")
+    print(oneRecord)
+    print(type(oneRecord))
+    print("Printing one record:")
+    print(f"Name: {oneRecord.name}, Email: {oneRecord.email}, Phone: {oneRecord.phone}")
+
+
+    # result = connection.execute(text("SELECT * FROM users"))
+    allRecords = result.fetchall()
+    print("Dumping 'allRecords' object:")
+    print(allRecords)
+    print(type(allRecords))
+    print("Printing all records:")
+    for record in allRecords:
+        print(f"Name: {record.name}, Email: {record.email}, Phone: {record.phone}")
