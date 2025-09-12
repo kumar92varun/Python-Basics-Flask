@@ -4,13 +4,6 @@ import requests
 
 app = Flask(__name__)
 
-cities = [
-    {"id": 1, "name": "New Delhi", "code": "new-delhi", "country": "India"},
-    {"id": 2, "name": "Agra", "code": "agra", "country": "India"},
-    {"id": 3, "name": "Lucknow", "code": "lucknow", "country": "India"},
-    {"id": 4, "name": "Mumbai", "code": "mumbai", "country": "India"},
-]
-
 blogData = {
     "clientName": "First Name",
     "clientEmail": "email@address.com",
@@ -34,6 +27,7 @@ def homePage():
 
 @app.route('/cities')
 def citiesListPage():
+    cities = getCitiesList()
     return render_template('pages/cities/list.html', cities = cities)
 
 
@@ -163,6 +157,9 @@ def dumpAllRequestAttributes():
 # API to list all cities
 @app.get('/api/cities')
 def citiesListAPI():
+    cities = getCitiesList()
+    cities = [dict(row._mapping) for row in cities]
+
     return {
         "status": "success",
         "message": "Cities loaded successfully",
@@ -218,6 +215,15 @@ def loadWeatherOfACity(cityId):
         }
     }
 
+def getCitiesList():
+    from sqlalchemy import create_engine, text
+
+    engine = create_engine("mysql+pymysql://root:toor@localhost:3306/others_flask_demo")
+    connection = engine.connect()
+    result = connection.execute(text("SELECT id,name,code FROM cities"))
+    cities = result.fetchall()
+    return cities
+
 
 def getCityIndexById(id):
     index = None
@@ -259,6 +265,16 @@ def runningRawSql():
             name VARCHAR(100), 
             email VARCHAR(100), 
             phone VARCHAR(20), 
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )
+    """
+
+    query = """
+        CREATE TABLE IF NOT EXISTS cities (
+            id INT PRIMARY KEY AUTO_INCREMENT, 
+            name VARCHAR(100), 
+            code VARCHAR(100), 
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )
