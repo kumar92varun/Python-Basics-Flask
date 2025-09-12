@@ -172,10 +172,17 @@ def citiesListAPI():
 # API to create a new city
 @app.post('/api/cities')
 def addCityAPI():
+    from flask import request
+    from sqlalchemy import create_engine, text
+    engine = create_engine("mysql+pymysql://root:toor@localhost:3306/others_flask_demo")
+    connection = engine.connect()
+    result = connection.execute(text(f"INSERT INTO cities (name, code) VALUES ('{request.form['name']}', '{request.form['code']}')"))
+    connection.commit()
+
     return {
         "status": "success",
         "message": "City added successfully",
-        "city": cities[2]
+        "cityId": result.lastrowid
     }
 
 
@@ -192,6 +199,12 @@ def deleteCityAPI(id):
 @app.get("/api/weather/<int:cityId>")
 def loadWeatherOfACity(cityId):
     city = getCityById(cityId)
+    if city is None:
+        return {
+            "status": "error",
+            "message": f"City with ID {cityId} not found in the database",
+            "data": {}
+        }
 
     queryParams = {
         'appid': os.getenv('WEATHER_API_KEY'),
@@ -200,6 +213,13 @@ def loadWeatherOfACity(cityId):
     }
     weatherResponse = requests.get("https://api.openweathermap.org/data/2.5/weather", params=queryParams)
     apiResponse = weatherResponse.json()
+
+    if apiResponse['cod'] != 200:
+        return {
+            "status": "error",
+            "message": f"Weather for city ID {cityId} could not be loaded. API response: {apiResponse['message']}",
+            "data": {}
+        }
 
     return {
         "status": "success",
@@ -225,23 +245,16 @@ def getCitiesList():
     return cities
 
 
-def getCityIndexById(id):
-    index = None
-
-    for i, city in enumerate(cities):
-        if city['id'] == id:
-            index = i
-
-    return index
-
-
 def getCityById(id):
-    index = getCityIndexById(id)
+    from sqlalchemy import create_engine, text
 
-    if index is not None:
-        return cities[index]
-    else:
+    engine = create_engine("mysql+pymysql://root:toor@localhost:3306/others_flask_demo")
+    connection = engine.connect()
+    result = connection.execute(text(f"SELECT id,name,code FROM cities WHERE id = {id}"))
+    city = result.fetchone()
+    if city is None:
         return None
+    return dict(city._mapping)
 
 
 @app.errorhandler(404)
