@@ -17,10 +17,11 @@
                         <th>Load Weather</th>
                         <th>City Weather</th>
                         <th>View City Page</th>
+                        <th>Delete City</th>
                     </thead>
                 
                     {% for city in cities %}
-                        <tr>
+                        <tr data-city-id="{{ city['id'] }}">
                             <td>{{ city['id'] }}</td>
                             <td>{{ city['name'] }}</td>
                             <td>
@@ -35,6 +36,9 @@
                             </td>
                             <td>
                                 <a class="btn btn-success" href="{{ url_for('loadCity', id = city['id']) }}">View City Page</a>
+                            </td>
+                            <td>
+                                <a class="btn btn-danger" onclick="deleteCity({{ city['id'] }})">Delete City</a>
                             </td>
                         </tr>
                     {% endfor %}
@@ -71,6 +75,23 @@
                     document.getElementById(`city-${id}-weather-feelslike`).innerText = `Feels Like: ${data.feelsLike}`;
                     document.getElementById(`city-${id}-weather-humidity`).innerText = `Humidity: ${data.humidity}`;
                     document.getElementById(`city-${id}-weather-wind`).innerText = `Wind: ${data.wind}`;
+                })
+            }
+
+            function deleteCity(id) {
+                flag = confirm("Are you sure you want to delete this city?")
+                if (!flag) { return }
+
+                fetch(`/api/cities/${id}`, {
+                    method: 'DELETE'
+                }).then(response => response.json())
+                .then(function(response) {
+                    if (response.status != 'success') {
+                        alert(response.message)
+                        return
+                    }
+
+                    document.querySelector(`tr[data-city-id='${id}']`).remove()
                 })
             }
         </script>

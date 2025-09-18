@@ -56,6 +56,7 @@ def viewMailer():
         blogDescription=blogData['blogDescription']
     )
 
+
 @app.get('/mailers/send')
 def sendMailer():
     import smtplib
@@ -173,9 +174,9 @@ def citiesListAPI():
 @app.post('/api/cities')
 def addCityAPI():
     from flask import request
-    from sqlalchemy import create_engine, text
-    engine = create_engine("mysql+pymysql://root:toor@localhost:3306/others_flask_demo")
-    connection = engine.connect()
+    from sqlalchemy import text
+    
+    connection = createDatabaseConnection()
     result = connection.execute(text(f"INSERT INTO cities (name, code) VALUES ('{request.form['name']}', '{request.form['code']}')"))
     connection.commit()
 
@@ -189,10 +190,25 @@ def addCityAPI():
 # API to delete a city
 @app.delete("/api/cities/<int:id>")
 def deleteCityAPI(id):
-    return {
-        "status": "success",
-        "message": f"City with ID {id} (Name: {cities[id]['name']}) has been deleted"
-    }
+    from sqlalchemy import text
+
+    connection = createDatabaseConnection()
+
+    result = connection.execute(text(f"DELETE FROM cities WHERE ID = {id}"))
+    dumpASqlalchemyResult(result)
+
+    connection.commit()
+
+    if result.rowcount > 0:
+        return {
+            "status": "success",
+            "message": "City has been deleted"
+        }
+    else:
+        return {
+            "status": "error",
+            "message": "City deletion failed"
+        }
 
 
 # Get weather of a particular city
@@ -236,20 +252,18 @@ def loadWeatherOfACity(cityId):
     }
 
 def getCitiesList():
-    from sqlalchemy import create_engine, text
+    from sqlalchemy import text
 
-    engine = create_engine("mysql+pymysql://root:toor@localhost:3306/others_flask_demo")
-    connection = engine.connect()
+    connection = createDatabaseConnection()
     result = connection.execute(text("SELECT id,name,code FROM cities"))
     cities = result.fetchall()
     return cities
 
 
 def getCityById(id):
-    from sqlalchemy import create_engine, text
+    from sqlalchemy import text
 
-    engine = create_engine("mysql+pymysql://root:toor@localhost:3306/others_flask_demo")
-    connection = engine.connect()
+    connection = createDatabaseConnection()
     result = connection.execute(text(f"SELECT id,name,code FROM cities WHERE id = {id}"))
     city = result.fetchone()
     if city is None:
@@ -341,3 +355,24 @@ def runningSelectQuery():
     print("Printing all records:")
     for record in allRecords:
         print(f"Name: {record.name}, Email: {record.email}, Phone: {record.phone}")
+
+
+def createDatabaseConnection():
+    from sqlalchemy import create_engine
+
+    engine = create_engine("mysql+pymysql://root:toor@localhost:3306/others_flask_demo")
+    connection = engine.connect()
+    return connection
+
+
+def dumpASqlalchemyResult(result):
+    print(f"rowcount: {result.rowcount}")
+    print(f"lastrowid: {result.lastrowid}")
+    print(f"returns_rows: {result.returns_rows}")
+    print(f"is_insert: {result.is_insert}")
+
+    try:
+        print("keys(): ", result.keys())
+    except Exception as e:
+        print(type(e))
+        print(e)
