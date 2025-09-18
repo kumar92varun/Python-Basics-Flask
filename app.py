@@ -20,23 +20,23 @@ blogData = {
 blogData['blogUrl'] = f"{blogData['blogUrl']}?utm_campaign={blogData['utmCampaign']}&utm_source={blogData['utmSource']}&utm_medium={blogData['utmMedium']}&utm_content={blogData['utmContent']}"
 
 
-@app.route('/')
+@app.get('/')
 def homePage():
     return render_template('pages/home.html')
 
 
-@app.route('/cities')
+@app.get('/cities')
 def citiesListPage():
     cities = getCitiesList()
     return render_template('pages/cities/list.html', cities = cities)
 
 
-@app.route('/cities/add')
+@app.get('/cities/add')
 def addCityPage():
-    return "Page to show a form to add a city in the database"
+    return render_template("pages/cities/add.html")
 
 
-@app.route('/cities/<int:id>')
+@app.get('/cities/<int:id>')
 def loadCity(id):
     city = getCityById(id)
 
