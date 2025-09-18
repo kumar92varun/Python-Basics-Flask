@@ -8,7 +8,7 @@ blogData = {
     "clientName": "First Name",
     "clientEmail": "email@address.com",
     "utmCampaign": "2025-sept",
-    "utmSource": "cs",
+    "utmSource": "cst",
     "utmMedium": "tech-mail",
     "utmContent": "cs-vk",
 
